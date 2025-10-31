@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai-নি পরামর্শক</title> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* This is the main CSS file for the chatbot. */
+
+        /* Set the font for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom scrollbar for a better look */
+        #chat-window::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        /* Style for the scrollbar track */
+        #chat-window::-webkit-scrollbar-track {
+            background: #2d3748; /* bg-gray-800 */
+        }
+
+        /* Style for the scrollbar thumb */
+        #chat-window::-webkit-scrollbar-thumb {
+            background: #4a5568; /* bg-gray-600 */
+            border-radius: 3px;
+        }
+
+        /* Style for the scrollbar thumb on hover */
+        #chat-window::-webkit-scrollbar-thumb:hover {
+            background: #718096; /* bg-gray-500 */
+        }
+
+        /* Animation for the message bubble */
+        .message-bubble {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Keyframes for the fadeIn animation */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Style for the typing indicator spans */
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #909090;
+            display: inline-block;
+            border-radius: 50%;
+            animation: bounce 1.3s infinite;
+        }
+
+        /* Animation delay for the second span of the typing indicator */
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Animation delay for the third span of the typing indicator */
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Keyframes for the bounce animation */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Style for the microphone button when recording */
+        .mic-btn.recording {
+            animation: pulse 1.5s infinite;
+            background-color: #ef4444; /* red-500 */
+        }
+
+        /* Keyframes for the pulse animation */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Style for the speaking text/loading audio */
+        .speaking {
+            animation: pulse-audio 1.5s infinite;
+        }
+
+        @keyframes pulse-audio {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+
+    <div
+        class="flex flex-col w-full max-w-2xl h-full md:h-[90%] bg-gray-800 shadow-2xl rounded-lg border border-gray-700">
+        <header
+            class="bg-gray-900/50 backdrop-blur-sm p-4 border-b border-gray-700 flex items-center gap-4 rounded-t-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="text-blue-400">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                <path d="M18 16.5h.01" />
+            </svg>
+            <div>
+                <h1 class="text-xl font-bold">Ai-নি পরামর্শক</h1> 
+                <p class="text-sm text-gray-400">Your friendly chatbot</p>
+            </div>
+            <button id="settings-btn" class="ml-auto p-2 rounded-full hover:bg-gray-700 transition-colors"
+                title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73 2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                    </path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+            <button id="stt-lang-btn" class="p-2 rounded-lg hover:bg-gray-700 transition-colors w-10 text-center font-semibold"
+                title="Switch to English input">
+                BN
+            </button>
+            <button id="sound-toggle-btn" class="p-2 rounded-full hover:bg-gray-700 transition-colors"
+                title="Toggle Sound">
+                <svg id="sound-on-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <svg id="sound-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+        </header>
+
+        <main id="chat-window" class="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
+            </main>
+
+        <div id="typing-indicator-container" class="px-6 pb-2"></div>
+
+        <footer class="p-4 md:p-6 border-t border-gray-700 rounded-b-lg">
+            <form id="chat-form" class="flex items-center space-x-2 md:space-x-4">
+                <input id="chat-input" type="text" placeholder="Type or click the mic to talk..." autocomplete="off"
+                    class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300">
+                <button id="mic-btn" type="button"
+                    class="bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg p-2 transition-colors duration-300 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-mic">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="22"></line>
+                    </svg>
+                </button>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <div id="api-key-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-gray-700">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Settings</h2>
+                <button id="close-modal-btn" class="p-1 rounded-full hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="w-6 h-6">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-400 mb-4">
+                Enter your Google AI API key to use your own model. Your key is saved locally in your browser and is
+                never sent to our servers. (jk)
+            </sCRIPTp>
+            <form id="api-key-form">
+                <label for="api-key-input" class="block text-sm font-medium text-gray-300 mb-2">Google AI API
+                    Key</label>
+                <input type="password" id="api-key-input"
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter your API key">
+                <div class="flex justify-end mt-6">
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-5 py-2 transition-colors">Save
+                        Key</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // This is the main JavaScript file for the chatbot.
+
+        // --- 1. DOM Element Selection ---
+        // Get references to the HTML elements that the script will interact with.
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const micBtn = document.getElementById('mic-btn');
+        const typingIndicatorContainer = document.getElementById('typing-indicator-container');
+        const settingsBtn = document.getElementById('settings-btn');
+        const apiKeyModal = document.getElementById('api-key-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const apiKeyForm = document.getElementById('api-key-form');
+        const apiKeyInput = document.getElementById('api-key-input');
+        // Add new selectors
+        const soundToggleBtn = document.getElementById('sound-toggle-btn');
+        const soundOnIcon = document.getElementById('sound-on-icon');
+        const soundOffIcon = document.getElementById('sound-off-icon');
+        const sttLangBtn = document.getElementById('stt-lang-btn'); // New STT lang button
+
+        // --- 2. State and System Prompt ---
+        // Initialize the API key and the system prompt for the chatbot.
+        let geminiApiKey = ""; // Will be loaded from localStorage
+        const systemPrompt = "You are a helpful and friendly chatbot. You must respond in the same language as the user. You can understand and respond in both English and Bengali (Bangla). If the user speaks Bangla, you MUST respond in Bangla. Do not use emojis in your response. Never describe an emoji; just provide a natural, conversational answer.";
+        // Add new state
+        let isSoundOn = true;
+        let currentAudio = null; // To stop audio when new one plays
+        let currentSttLang = 'bn-BD'; // 'bn-BD' or 'en-US'
+
+        // --- 3. Core Functions ---
+
+        /**
+         * Appends a message to the chat window.
+         * @param {string} text - The text of the message.
+         * @param {string} sender - The sender of the message ('user', 'bot', or 'error').
+         */
+        function addMessage(text, sender) {
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('flex', 'w-full', 'message-bubble');
+            
+            let bubbleContent = '';
+            
+            // Create the message bubble based on the sender.
+            switch(sender) {
+                case 'user':
+                    messageBubble.classList.add('justify-end');
+                    bubbleContent = `<div class="bg-blue-600 rounded-lg px-4 py-2 max-w-xs md:max-w-md"><p>${text}</p></div>`;
+                    break;
+                case 'bot':
+                    bubbleContent = `
+                        <div class="bg-gray-600 rounded-lg px-4 py-2 max-w-xs md:max-w-md relative group">
+                            <p>${text}</p>
+                             <button class="tts-btn absolute -top-2 -right-2 p-1 bg-gray-900/50 rounded-full text-gray-300 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity" title="Read aloud">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'error':
+                     bubbleContent = `
+                        <div class="bg-red-500/80 text-white rounded-lg px-4 py-2 max-w-xs md:max-w-md">
+                            <p class="font-semibold">Oops!</p><p>${text}</p>
+                        </div>`;
+                    break;
+            }
+            
+            messageBubble.innerHTML = bubbleContent;
+            chatWindow.appendChild(messageBubble);
+            scrollToBottom();
+
+            // Return the bubble element itself if it's a bot message
+            if (sender === 'bot') {
+                return messageBubble.querySelector('.group');
+            }
+            return null; // Not a bot message
+        }
+
+        // Show the typing indicator.
+        function showTypingIndicator(isLoadingAudio = false) {
+            // NOTE: We set isLoadingAudio to false by default now
+            const text = isLoadingAudio ? "Loading audio..." : `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            const padding = isLoadingAudio ? "px-4 py-2" : "px-4 py-3";
+            
+            typingIndicatorContainer.innerHTML = `
+                <div class="flex items-center space-x-1.5 message-bubble">
+                    <div class="bg-gray-600 rounded-lg ${padding}">
+                        ${text}
+                    </div>
+                </div>`;
+            scrollToBottom();
+        }
+
+        // Hide the typing indicator.
+        function hideTypingIndicator() {
+            typingIndicatorContainer.innerHTML = '';
+        }
+
+        // Scroll the chat window to the bottom.
+        function scrollToBottom() {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // --- 4. Speech Recognition (STT) & Synthesis (TTS) ---
+
+        /**
+         * Checks if a string contains Bengali characters.
+         * @param {string} text - The text to check.
+         * @returns {boolean} - True if Bengali characters are found.
+         */
+        function isBangla(text) {
+            // Unicode range for Bengali characters
+            const banglaRegex = /[\u0980-\u09FF]/;
+            return banglaRegex.test(text);
+        }
+
+        /**
+         * Speaks the given text using Speech Synthesis.
+         * @param {string} text - The text to speak.
+         * @param {HTMLElement} [bubble] - The message bubble element to add 'speaking' class to.
+         */
+        async function speak(text, bubble = null) {
+            if (!isSoundOn || !text) return;
+
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.src = '';
+                currentAudio = null;
+            }
+            speechSynthesis.cancel(); // Also cancel browser TTS just in case
+
+            // Show loading state on bubble
+            if (bubble) bubble.classList.add('speaking');
+            
+            try {
+                // *** NOTE: This will now fail, as getTtsAudio is removed from the new getBotResponse
+                // Keeping the function here doesn't break anything, but TTS button won't work
+                // without a valid API key and a call to getTtsAudio
+                addMessage("Text-to-speech is not connected to the local bot.", 'error');
+                if (bubble) bubble.classList.remove('speaking');
+                // const audioBlob = await getTtsAudio(text); 
+                // playAudioBlob(audioBlob, bubble); 
+
+            } catch (error) {
+                console.error("Error in speak function:", error);
+                if (bubble) bubble.classList.remove('speaking'); // Remove loading state on error
+                addMessage(`Error playing audio: ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Plays a pre-fetched audio blob.
+         * @param {Blob|null} audioBlob - The WAV audio blob to play.
+         * @param {HTMLElement} [bubble] - The message bubble element to add 'speaking' class to.
+         */
+        function playAudioBlob(audioBlob, bubble = null) {
+            if (!isSoundOn || !audioBlob) {
+                if (bubble) bubble.classList.remove('speaking');
+                return;
+            }
+
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.src = '';
+                currentAudio = null;
+            }
+            speechSynthesis.cancel(); // Also cancel browser TTS just in case
+
+            if (bubble) bubble.classList.add('speaking');
+            
+            const audioUrl = URL.createObjectURL(audioBlob);
+            currentAudio = new Audio(audioUrl);
+            
+            currentAudio.onended = () => {
+                if (bubble) bubble.classList.remove('speaking');
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+            };
+            currentAudio.onerror = (e) => {
+                console.error("Audio playback error:", e);
+                if (bubble) bubble.classList.remove('speaking');
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+            };
+            
+            // If sound was turned off while fetching, don't play.
+            if (isSoundOn) {
+                currentAudio.play();
+            } else {
+                if (bubble) bubble.classList.remove('speaking');
+                URL.revokeObjectURL(audioUrl);
+                currentAudio = null;
+            }
+        }
+
+        /**
+         * Gets TTS audio from the Gemini API.
+         * @param {string} text - The text to synthesize.
+         * @returns {Promise<Blob|null>} - A WAV audio blob or null on error.
+         */
+        async function getTtsAudio(text) {
+            // This function is no longer called by getBotResponse
+            // but is kept for the TTS button. It still needs the Gemini API key.
+            const apiKeyToUse = geminiApiKey || ""; 
+            if (!apiKeyToUse) {
+                addMessage("API Key is not set. Cannot fetch audio.", 'error');
+                return null;
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKeyToUse}`;
+            
+            // Guide the model on language
+            const promptText = isBangla(text) ? `In Bengali: ${text}` : text;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: promptText }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || `API error ${response.status}`);
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleTateMatch[1], 10) : 24000; // Default to 24000
+                    
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const wavBlob = pcmToWav(pcmData, sampleRate);
+                    return wavBlob;
+                } else {
+                    console.error("Invalid response from TTS API:", result);
+                    throw new Error("Invalid audio data received from API.");
+                }
+
+            } catch (error) {
+                console.error("TTS API Error:", error);
+                addMessage(`TTS API Error: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+
+        // --- STT Setup ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let isRecording = false;
+
+        // Check if the browser supports Speech Recognition.
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = currentSttLang; // Use the state variable
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            // Event handler for when the recognition starts.
+            recognition.onstart = () => {
+                isRecording = true;
+                micBtn.classList.add('recording');
+                chatInput.placeholder = 'Listening...';
+            };
+
+            // Event handler for when the recognition ends.
+            recognition.onend = () => {
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                chatInput.placeholder = 'Type or click the mic to talk...';
+            };
+
+            // Event handler for when a result is received.
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                chatInput.value = transcript;
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                chatForm.dispatchEvent(submitEvent);
+            };
+
+        // Event handler for when an error occurs.
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                let errorMsg = `Speech recognition error: ${event.error}`;
+                if (event.error === 'no-speech') {
+                    errorMsg = 'No speech was detected. Please try again.';
+                } else if (event.error === 'network') {
+                    errorMsg = 'Network error during speech recognition.';
+                } else if (event.error === 'not-allowed') {
+                    errorMsg = 'Microphone access denied. Please allow microphone access in your browser settings.';
+                }
+                addMessage(errorMsg, 'error');
+            };
+
+            // Event listener for the microphone button.
+            micBtn.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    try {
+                        recognition.lang = currentSttLang; // Set lang right before starting
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Error starting recognition:", e);
+                        addMessage(`Could not start microphone. Is permission granted?`, 'error');
+                    }
+                }
+            });
+        } else {
+            // If the browser does not support Speech Recognition, hide the microphone button and show an error message.
+            console.warn("Speech Recognition not supported in this browser.");
+            micBtn.style.display = 'none';
+            addMessage("Your browser doesn't support Speech-to-Text.", 'error');
+        }
+
+        // Event listener for the text-to-speech button.
+        chatWindow.addEventListener('click', (event) => {
+            const ttsButton = event.target.closest('.tts-btn');
+            if (ttsButton) {
+                const messageBubble = ttsButton.closest('.group');
+                const textToSpeak = messageBubble.querySelector('p')?.textContent;
+                document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+                if (textToSpeak) {
+                    // Use the new async speak function
+                    // This will now show an error unless you re-add a Gemini API key
+                    speak(textToSpeak, messageBubble); 
+                }
+            }
+        });
+
+        // --- 5. Gemini API Call ---
+        /**
+         * Gets a response from the LOCAL RAG BOT API.
+         * @param {string} userMessage - The user's message.
+         */
+        async function getBotResponse(userMessage) {
+            
+            // This is the new URL for your local Flask server
+            const apiUrl = 'http://localhost:5000/chat';
+
+            // This is the new, simpler payload
+            const payload = {
+                message: userMessage
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || `API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                const botText = result.response; // Our server sends { "response": "..." }
+
+                if (botText) {
+                    // --- MODIFICATION ---
+                    // Since our local RAG bot doesn't send audio,
+                    // we will just hide the typing indicator and add the message.
+                    // All the Gemini TTS logic (getTtsAudio, playAudioBlob) is removed.
+                    hideTypingIndicator();
+                    addMessage(botText, 'bot');
+                    // --- END MODIFICATION ---
+                } else {
+                     throw new Error("API response was empty.");
+                }
+
+            } catch (error) {
+                console.error("Local API Error:", error);
+                hideTypingIndicator();
+                addMessage(`Failed to get response from local bot: ${error.message}. Is the 'python app.py' server running?`, 'error');
+            }
+        }
+
+        // --- 6. Event Listeners ---
+        // Event listener for the chat form submission.
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userInput = chatInput.value.trim();
+            if (userInput) {
+                // Stop any active recognition
+                if (isRecording) {
+                    recognition.stop();
+                }
+                // Stop any playing audio
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.src = '';
+                    currentAudio = null;
+                }
+                speechSynthesis.cancel();
+                document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+
+                addMessage(userInput, 'user');
+                chatInput.value = '';
+                showTypingIndicator(); // This is the normal typing indicator
+                getBotResponse(userInput);
+            }
+        });
+
+        // --- 7. Settings Modal Logic ---
+        // Open the settings modal.
+        function openModal() {
+            apiKeyInput.value = geminiApiKey;
+            apiKeyModal.classList.remove('hidden');
+        }
+        
+        // Close the settings modal.
+        function closeModal() {
+            apiKeyModal.classList.add('hidden');
+        }
+
+        // Event listeners for the settings modal.
+        settingsBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        apiKeyModal.addEventListener('click', (e) => {
+            if (e.target === apiKeyModal) {
+                closeModal();
+            }
+        });
+
+        // ADD NEW EVENT LISTENER FOR STT LANG TOGGLE
+        sttLangBtn.addEventListener('click', () => {
+            if (currentSttLang === 'bn-BD') {
+                currentSttLang = 'en-US';
+                sttLangBtn.textContent = 'EN';
+                sttLangBtn.title = 'Switch to Bengali input';
+            } else {
+                currentSttLang = 'bn-BD';
+                sttLangBtn.textContent = 'BN';
+                sttLangBtn.title = 'Switch to English input';
+            }
+            console.log("STT Language set to:", currentSttLang);
+        });
+
+        // ADD NEW EVENT LISTENER FOR SOUND TOGGLE
+        soundToggleBtn.addEventListener('click', () => {
+            isSoundOn = !isSoundOn;
+            soundOnIcon.classList.toggle('hidden');
+            soundOffIcon.classList.toggle('hidden');
+            if (!isSoundOn) {
+                speechSynthesis.cancel(); // Stop any active browser speech
+                // Stop any active API audio
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.src = '';
+                    currentAudio = null;
+                }
+                document.querySelectorAll('.speaking').forEach(el => el.classList.remove('speaking'));
+            }
+        });
+
+        // Event listener for the API key form submission.
+        apiKeyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            geminiApiKey = apiKeyInput.value.trim();
+            if (geminiApiKey) {
+                localStorage.setItem('geminiApiKey', geminiApiKey);
+                addMessage("API Key saved successfully!", 'bot');
+            } else {
+                localStorage.removeItem('geminiApiKey');
+                addMessage("API Key removed.", 'bot');
+            }
+            closeModal();
+        });
+
+
+        // --- 8. Initial Load ---
+        // When the window loads, get the API key from local storage and show a welcome message.
+        window.onload = () => {
+             // We still load this, in case the user wants to use the TTS button
+             geminiApiKey = localStorage.getItem('geminiApiKey') || "";
+             if (geminiApiKey) {
+                 console.log("Using custom API key from localStorage for TTS.");
+             } else {
+                 setTimeout(() => {
+                    // This message is no longer critical, as the main bot doesn't need the key
+                    // addMessage("Please set your Google AI API key in the settings to start chatting.", 'error');
+                    console.warn("Google AI API key not set. TTS button will not work.");
+                 }, 1000);
+             }
+
+             setTimeout(() => {
+                // Changed Welcome Message to Bengali
+                const welcomeMessage = "হ্যালো! আমি আপনাকে কিভাবে সাহায্য করতে পারি?"; 
+                addMessage(welcomeMessage, 'bot');
+             }, 500);
+        };
+
+        // --- 9. Audio Utility Functions ---
+        // These are kept for the TTS button
+
+        /**
+         * Converts a base64 string to an ArrayBuffer.
+         * @param {string} base64 - The base64-encoded string.
+         * @returns {ArrayBuffer}
+         */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /**
+         * Writes a string to a DataView.
+         * @param {DataView} view - The DataView to write to.
+         * @param {number} offset - The offset to write at.
+         * @param {string} string - The string to write.
+         */
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        /**
+         * Converts raw PCM audio data to a WAV blob.
+         * @param {ArrayBuffer} pcmData - The raw PCM data.
+         * @param {number} sampleRate - The sample rate (e.g., 24000).
+         * @returns {Blob} - A WAV audio blob.
+         */
+        function pcmToWav(pcmData, sampleRate) {
+            const pcm16 = new Int16Array(pcmData);
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const byteRate = sampleRate * numChannels * (bitsPerSample / 8);
+            const blockAlign = numChannels * (bitsPerSample / 8);
+            const dataSize = pcm16.length * 2; // 2 bytes per sample (Int16)
+            const wavHeaderSize = 44;
+            const buffer = new ArrayBuffer(wavHeaderSize + dataSize);
+            
+            const view = new DataView(buffer);
+
+            // RIFF chunk descriptor
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true); // (file size - 8)
+            writeString(view, 8, 'WAVE');
+            
+            // "fmt " sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
+            view.setUint16(20, 1, true); // Audio format (1 for PCM)
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitsPerSample, true);
+            
+            // "data" sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true);
+            }
+            
+            return new Blob([view], { type: 'audio/wav' });
+        }
+    </script>
+</body>
+
+</html>
