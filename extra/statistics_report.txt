@@ -1,0 +1,156 @@
+BANGLADESH LEGAL ACTS - STATISTICAL ANALYSIS
+======================================================================
+Dataset: Contextualized_Bangladesh_Legal_Acts.json
+Generated: 2025-11-01 06:53:19
+
+
+======================================================================
+BASIC STATISTICS
+======================================================================
+Total Acts:           1,484
+Total Sections:       35,633
+Average Sections/Act: 24.01
+
+======================================================================
+SECTION COUNT DISTRIBUTION
+======================================================================
+Min sections in an act:  0
+Max sections in an act:  586
+Average:                 24.01
+Median:                  11
+
+Sections        Acts       Percentage   Bar
+----------------------------------------------------------------------
+0               203         13.68%      ██████
+1               2            0.13%      
+2               92           6.20%      ███
+3               158         10.65%      █████
+4               56           3.77%      █
+5               34           2.29%      █
+6               39           2.63%      █
+7               26           1.75%      
+8               35           2.36%      █
+9               39           2.63%      █
+10              34           2.29%      █
+11              26           1.75%      
+12              24           1.62%      
+13              23           1.55%      
+14              22           1.48%      
+15              21           1.42%      
+16              26           1.75%      
+17              20           1.35%      
+18              22           1.48%      
+19              28           1.89%      
+... and 110 more categories
+
+======================================================================
+TOP 10 ACTS WITH MOST SECTIONS
+======================================================================
+ 1. [1898] The Code of Criminal Procedure, 1898
+    Sections: 586
+
+ 2. [1860] 1The Penal Code, 1860
+    Sections: 583
+
+ 3. [1983] The Bangladesh Merchant Shipping Ordinance, 1983
+    Sections: 516
+
+ 4. [1994] কোম্পানী আইন, ১৯৯৪
+    Sections: 418
+
+ 5. [1925] The Succession Act, 1925
+    Sections: 395
+
+ 6. [2006] বাংলাদেশ শ্রম আইন, ২০০৬
+    Sections: 355
+
+ 7. [2023] আয়কর আইন, ২০২৩
+    Sections: 345
+
+ 8. [2023] কাস্টমস আইন, ২০২৩
+    Sections: 271
+
+ 9. [2018] ক্যান্টনমেন্ট আইন, ২০১৮
+    Sections: 219
+
+10. [1872] 1The Contract Act, 1872
+    Sections: 208
+
+======================================================================
+ACTS WITH NO SECTIONS
+======================================================================
+Found 203 acts with no sections:
+ 1. [1882] The Powers-of-Attorney Act, 1882
+ 2. [1889] The Merchandise Marks Act, 1889
+ 3. [1891] The Bankers' Book Evidence Act, 1891
+ 4. [1897] The Epidemic Diseases Act, 1897
+ 5. [1898] The Lepers Act, 1898
+ 6. [1910] The Electricity Act, 1910
+ 7. [1911] The Patents And Designs Act, 1911
+ 8. [1914] The Destructive Insects and Pests Act, 1914
+ 9. [1916] The Medical Degrees Act, 1916
+10. [1919] The Juvenile Smoking Act, 1919
+... and 193 more
+
+======================================================================
+ACTS BY YEAR
+======================================================================
+Year         Count      Bar Chart
+----------------------------------------------------------------------
+1799         1          ▌
+1810         1          ▌
+1818         1          ▌
+1822         1          ▌
+1825         1          ▌
+1829         2          █
+1833         1          ▌
+1836         1          ▌
+1850         3          █
+1851         1          ▌
+1855         2          █
+1856         2          █
+1860         2          █
+1861         2          █
+1864         1          ▌
+1865         1          ▌
+1867         3          █
+1868         1          ▌
+1869         1          ▌
+1870         1          ▌
+... and 146 more years
+
+Total unique years: 166
+
+======================================================================
+ACTS BY GOVERNMENT SYSTEM
+======================================================================
+Parliamentary Democracy (increasingly au     430 ( 29.0%) ██████████████
+Parliamentary Democracy                      327 ( 22.0%) ███████████
+Military Rule                                261 ( 17.6%) ████████
+British Colonial Rule                        185 ( 12.5%) ██████
+Military Rule transitioning to Democracy      70 (  4.7%) ██
+Interim Government                            61 (  4.1%) ██
+Dominion of Pakistan                          54 (  3.6%) █
+Historical period - context not availabl      36 (  2.4%) █
+Republic of Pakistan                          18 (  1.2%) 
+Company Rule                                  16 (  1.1%) 
+Caretaker Government                          14 (  0.9%) 
+Democracy                                      8 (  0.5%) 
+Provisional Government (Mujibnagar Gover       3 (  0.2%) 
+Company Rule (Dual System until 1772)          1 (  0.1%) 
+
+======================================================================
+ACTS BY LEGAL PERIOD
+======================================================================
+Awami League Dominance                       456 ( 30.7%) ███████████████
+Military Rule Era                            236 ( 15.9%) ███████
+British Crown Rule                           227 ( 15.3%) ███████
+Democratic Restoration                       207 ( 13.9%) ██████
+East Pakistan Period                         160 ( 10.8%) █████
+Early Independent Bangladesh                 147 (  9.9%) ████
+Interim Government Transition                 34 (  2.3%) █
+East India Company Rule                       17 (  1.1%) 
+
+======================================================================
+END OF REPORT
+======================================================================

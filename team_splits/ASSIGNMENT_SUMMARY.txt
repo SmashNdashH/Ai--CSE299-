@@ -1,0 +1,28 @@
+TEAM ASSIGNMENT SUMMARY
+================================================================================
+
+Total Acts: 1484
+Team Size: 4
+Acts per Person: ~371
+Generated: 2025-11-01 06:49:27
+
+
+Person 1:
+  Acts: 0-370 (371 acts)
+  Read from: team_splits/Person_1_acts_0_to_370.txt
+  Fill in: team_splits/Person_1_QA_template.json
+
+Person 2:
+  Acts: 371-741 (371 acts)
+  Read from: team_splits/Person_2_acts_371_to_741.txt
+  Fill in: team_splits/Person_2_QA_template.json
+
+Person 3:
+  Acts: 742-1112 (371 acts)
+  Read from: team_splits/Person_3_acts_742_to_1112.txt
+  Fill in: team_splits/Person_3_QA_template.json
+
+Person 4:
+  Acts: 1113-1483 (371 acts)
+  Read from: team_splits/Person_4_acts_1113_to_1483.txt
+  Fill in: team_splits/Person_4_QA_template.json
